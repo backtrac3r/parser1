@@ -11,7 +11,7 @@ async fn main() {
         .with_respect_robots_txt(true)
         .build();
 
-    let mut website = Website::new("https://crates.io/crates/spider")
+    let mut website = Website::new("https://spider-rs.github.io/spider-py/")
         .with_config(config.clone())
         .build()
         .unwrap();
