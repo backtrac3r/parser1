@@ -6,4 +6,5 @@ edition = "2021"
 [dependencies]
 reqwest = "0.12.5"
 scraper = "0.19.0"
+spider = { version = "1.98.0", features = ["sync", "cache", "smart"] }
 tokio = { version = "1.38.0", features = ["full"] }

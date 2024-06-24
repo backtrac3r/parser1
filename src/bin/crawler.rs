@@ -1,36 +1,29 @@
-use reqwest::header;
-use reqwest::Client;
-use scraper::{Html, Selector};
-use std::collections::HashMap;
+use spider::configuration::Configuration;
+use spider::tokio;
+use spider::website::Website;
 
 #[tokio::main]
 async fn main() {
-    let client = Client::new();
+    let config = Configuration::new()
+        .with_user_agent(Some("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"))
+        .with_depth(30)
+        .with_redirect_limit(3)
+        .with_respect_robots_txt(true)
+        .build();
 
-    let mut headers = header::HeaderMap::new();
-    headers.insert("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36".parse().unwrap());
-
-    let params = {
-        let mut params = HashMap::new();
-        params.insert("v", "KmzvSo90Zj4".to_string());
-        params
-    };
-
-    let response = client
-        .get("https://www.youtube.com/watch")
-        .headers(headers)
-        .query(&params)
-        .send()
-        .await
+    let mut website = Website::new("https://crates.io/crates/spider")
+        .with_config(config.clone())
+        .build()
         .unwrap();
 
-    assert!(response.status().is_success());
+    let mut rx = website.subscribe(16).unwrap();
 
-    let html = Html::parse_fragment(&response.text().await.unwrap());
+    tokio::spawn(async move {
+        while let Ok(res) = rx.recv().await {
+            println!("{:?}", res.get_url());
+        }
+    });
 
-    let selector = Selector::parse("title").unwrap();
-
-    let h1 = html.select(&selector).next().unwrap();
-
-    println!("{}", h1.html());
+    website.crawl_smart().await;
+    website.unsubscribe();
 }
