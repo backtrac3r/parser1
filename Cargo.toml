@@ -7,5 +7,6 @@ edition = "2021"
 clap = { version = "4.5.7", features = ["cargo"] }
 reqwest = "0.12.5"
 scraper = "0.19.0"
-spider = { version = "1.98.0", features = ["sync", "cache", "smart"] }
+# spider = { version = "1.98.0", features = ["sync", "chrome", "chrome_intercept", "cache_chrome_hybrid", "chrome_stealth"] }
+spider = { version = "1.98.0", features = ["sync", "smart", "cache"] }
 tokio = { version = "1.38.0", features = ["full"] }
